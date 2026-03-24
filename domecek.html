@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2D5016">
+<title>Domeček 🏠</title>
+<style>
+:root {
+  --cream: #FAF7F2;
+  --cream-d: #F0EBE3;
+  --cream-dd: #E4D9CC;
+  --green: #2D5016;
+  --green-m: #3D6B20;
+  --green-l: #4A7C2F;
+  --green-p: #EBF2E4;
+  --anthracite: #252520;
+  --anthracite-m: #4A4A44;
+  --anthracite-l: #7A7A72;
+  --wood: #C4956A;
+  --wood-l: #E8D5C0;
+  --wood-p: #F5EDE3;
+  --red: #C0392B;
+  --red-p: #FDE8E8;
+  --yellow: #D4810A;
+  --yellow-p: #FEF3E2;
+  --blue: #1D6FA4;
+  --blue-p: #DBEAFE;
+  --white: #FFFFFF;
+  --sh: 0 2px 12px rgba(37,37,32,.07);
+  --sh-lg: 0 8px 32px rgba(37,37,32,.14);
+  --r: 14px;
+  --r-sm: 10px;
+  --r-xs: 7px;
+  --f: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--f);
+  background: var(--cream);
+  color: var(--anthracite);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+button { font-family: var(--f); cursor: pointer; border: none; background: none; }
+input, select, textarea { font-family: var(--f); }
+a { color: inherit; text-decoration: none; }
+
+/* ===== HEADER ===== */
+.header {
+  background: var(--green);
+  color: #fff;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 2px 16px rgba(0,0,0,.2);
+}
+.header-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 12px 16px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-title { flex: 1; }
+.header-title h1 { font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+.header-title .subtitle { font-size: 11px; opacity: .7; margin-top: 1px; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.btn-icon {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: background .15s;
+  flex-shrink: 0;
+}
+.btn-icon:hover { background: rgba(255,255,255,.25); }
+.sync-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.15);
+  white-space: nowrap;
+  line-height: 1.4;
+  cursor: default;
+}
+.sync-badge.ok { background: rgba(100,200,50,.25); }
+.sync-badge.err { background: rgba(200,50,50,.3); }
+
+/* ===== MAIN ===== */
+.app { max-width: 920px; margin: 0 auto; padding: 16px 16px 100px; }
+
+/* ===== STATS ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--white);
+  border-radius: var(--r-sm);
+  padding: 12px 10px;
+  text-align: center;
+  box-shadow: var(--sh);
+}
+.stat-card .num { font-size: 26px; font-weight: 800; line-height: 1; }
+.stat-card .lbl { font-size: 10px; color: var(--anthracite-l); margin-top: 3px; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+.stat-card.celkem .num { color: var(--anthracite); }
+.stat-card.koupit .num { color: var(--red); }
+.stat-card.objednano .num { color: var(--blue); }
+.stat-card.mame .num { color: var(--green-l); }
+.stat-card.celkem { border-top: 3px solid var(--wood); }
+.stat-card.koupit { border-top: 3px solid var(--red); }
+.stat-card.objednano { border-top: 3px solid var(--blue); }
+.stat-card.mame { border-top: 3px solid var(--green-l); }
+
+/* ===== CONTROLS BAR ===== */
+.controls-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.search-wrap {
+  flex: 1;
+  min-width: 140px;
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--anthracite-l);
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  border: 1.5px solid var(--cream-dd);
+  border-radius: var(--r-sm);
+  background: var(--white);
+  font-size: 14px;
+  color: var(--anthracite);
+  outline: none;
+  transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--green-m); }
+.search-input::placeholder { color: var(--anthracite-l); }
+.ctrl-btn {
+  padding: 9px 13px;
+  border-radius: var(--r-sm);
+  background: var(--white);
+  border: 1.5px solid var(--cream-dd);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--anthracite-m);
+  transition: all .15s;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+}
+.ctrl-btn:hover { border-color: var(--green-m); color: var(--green); }
+.ctrl-btn.active { background: var(--green-p); border-color: var(--green-m); color: var(--green); }
+.ctrl-btn .badge {
+  background: var(--green);
+  color: white;
+  border-radius: 20px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ===== FILTERS PANEL ===== */
+.filters-panel {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: var(--sh);
+  display: none;
+}
+.filters-panel.open { display: block; }
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.filter-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--anthracite-l);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 5px;
+}
+.filter-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid var(--cream-dd);
+  border-radius: var(--r-xs);
+  background: var(--cream);
+  font-size: 13px;
+  color: var(--anthracite);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A4A44' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+  outline: none;
+  cursor: pointer;
+}
+.filter-select:focus { border-color: var(--green-m); }
+.filters-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.btn-clear {
+  padding: 7px 14px;
+  border-radius: var(--r-xs);
+  border: 1.5px solid var(--cream-dd);
+  font-size: 13px;
+  color: var(--anthracite-m);
+  background: var(--cream);
+  font-weight: 600;
+}
+
+/* ===== SORT ROW ===== */
+.sort-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.sort-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--white);
+  border: 1.5px solid var(--cream-dd);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--anthracite-m);
+  transition: all .15s;
+}
+.sort-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+/* ===== ROOM SECTION ===== */
+.room-section { margin-bottom: 24px; }
+.room-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+.room-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.room-count {
+  background: var(--green-p);
+  color: var(--green);
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.room-price {
+  font-size: 13px;
+  color: var(--anthracite-l);
+  font-weight: 600;
+}
+
+/* ===== ITEM CARD ===== */
+.item-card {
+  background: var(--white);
+  border-radius: var(--r-sm);
+  margin-bottom: 8px;
+  box-shadow: var(--sh);
+  overflow: hidden;
+  transition: transform .1s, box-shadow .1s;
+  border-left: 4px solid transparent;
+}
+.item-card:active { transform: scale(.99); }
+.item-card.pri-red { border-left-color: var(--red); }
+.item-card.pri-yellow { border-left-color: var(--yellow); }
+.item-card.pri-green { border-left-color: var(--green-l); }
+.item-card.done {
+  opacity: .6;
+  border-left-color: var(--cream-dd) !important;
+}
+.item-main {
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.item-status-btn {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .1s, background .15s;
+  border: 2px solid transparent;
+}
+.item-status-btn:active { transform: scale(.9); }
+.item-status-btn.koupit { background: var(--red-p); border-color: var(--red); }
+.item-status-btn.objednano { background: var(--blue-p); border-color: var(--blue); }
+.item-status-btn.mame { background: var(--green-p); border-color: var(--green-l); }
+.item-body { flex: 1; min-width: 0; }
+.item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--anthracite);
+  line-height: 1.3;
+}
+.item-card.done .item-name {
+  text-decoration: line-through;
+  color: var(--anthracite-l);
+}
+.item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+.tag {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.tag-room { background: var(--wood-p); color: var(--wood); }
+.tag-cat { background: var(--cream-d); color: var(--anthracite-m); }
+.tag-shop { background: var(--blue-p); color: var(--blue); }
+.item-right {
+  flex-shrink: 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.item-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--anthracite);
+  white-space: nowrap;
+}
+.item-card.done .item-price { color: var(--anthracite-l); }
+.item-actions {
+  display: flex;
+  gap: 4px;
+}
+.action-btn {
+  width: 28px; height: 28px;
+  border-radius: var(--r-xs);
+  font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.action-btn.edit { background: var(--cream-d); color: var(--anthracite-m); }
+.action-btn.edit:hover { background: var(--wood-p); color: var(--wood); }
+.action-btn.del { background: var(--cream-d); color: var(--anthracite-m); }
+.action-btn.del:hover { background: var(--red-p); color: var(--red); }
+.action-btn.note-btn { background: var(--cream-d); color: var(--anthracite-m); }
+.action-btn.note-btn.has-note { background: var(--yellow-p); color: var(--yellow); }
+.action-btn.note-btn.open { background: var(--yellow-p); color: var(--yellow); }
+
+/* Note expansion */
+.item-note {
+  padding: 0 14px 12px 60px;
+  font-size: 13px;
+  color: var(--anthracite-m);
+  line-height: 1.5;
+  border-top: 1px solid var(--cream-d);
+  padding-top: 10px;
+  display: none;
+}
+.item-note.open { display: block; }
+.item-note-text { }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--anthracite-l);
+}
+.empty-state .emoji { font-size: 48px; display: block; margin-bottom: 12px; }
+.empty-state h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.empty-state p { font-size: 14px; }
+
+/* ===== FAB ===== */
+.fab {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  right: 20px;
+  width: 56px; height: 56px;
+  background: var(--green);
+  color: white;
+  border-radius: 50%;
+  font-size: 28px;
+  box-shadow: 0 4px 20px rgba(45,80,22,.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 150;
+  transition: transform .15s, background .15s;
+  line-height: 1;
+}
+.fab:hover { background: var(--green-m); }
+.fab:active { transform: scale(.93); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--white);
+  border-radius: var(--r) var(--r) 0 0;
+  width: 100%;
+  max-width: 680px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 0 0 calc(20px + env(safe-area-inset-bottom));
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@media (min-width: 700px) {
+  .modal-overlay { align-items: center; padding: 20px; }
+  .modal { border-radius: var(--r); max-height: 90vh; }
+}
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--cream-dd);
+  border-radius: 2px;
+  margin: 10px auto 0;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--cream-d);
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  z-index: 1;
+}
+.modal-title { font-size: 18px; font-weight: 700; }
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--cream-d);
+  font-size: 18px;
+  color: var(--anthracite-m);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.modal-close:hover { background: var(--cream-dd); }
+.modal-body { padding: 20px; }
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-col-2 { grid-column: span 2; }
+@media (max-width: 480px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-col-2 { grid-column: span 1; }
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--anthracite-m);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.form-input, .form-select, .form-textarea {
+  padding: 10px 12px;
+  border: 1.5px solid var(--cream-dd);
+  border-radius: var(--r-xs);
+  background: var(--cream);
+  font-size: 14px;
+  color: var(--anthracite);
+  outline: none;
+  transition: border-color .15s;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--green-m);
+  background: var(--white);
+}
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A4A44' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-color: var(--cream);
+  padding-right: 32px;
+}
+.form-select:focus { background-color: var(--white); }
+.form-textarea { resize: vertical; min-height: 72px; }
+.priority-btns {
+  display: flex;
+  gap: 6px;
+}
+.pri-btn {
+  flex: 1;
+  padding: 9px 6px;
+  border-radius: var(--r-xs);
+  border: 2px solid var(--cream-dd);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  transition: all .15s;
+  background: var(--cream);
+}
+.pri-btn[data-v="🔴"] { color: var(--red); }
+.pri-btn[data-v="🟡"] { color: var(--yellow); }
+.pri-btn[data-v="🟢"] { color: var(--green-l); }
+.pri-btn.active[data-v="🔴"] { background: var(--red-p); border-color: var(--red); }
+.pri-btn.active[data-v="🟡"] { background: var(--yellow-p); border-color: var(--yellow); }
+.pri-btn.active[data-v="🟢"] { background: var(--green-p); border-color: var(--green-l); }
+.modal-footer {
+  padding: 16px 20px 0;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid var(--cream-d);
+}
+.btn-primary {
+  flex: 1;
+  padding: 13px;
+  border-radius: var(--r-sm);
+  background: var(--green);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  transition: background .15s;
+}
+.btn-primary:hover { background: var(--green-m); }
+.btn-secondary {
+  padding: 13px 18px;
+  border-radius: var(--r-sm);
+  background: var(--cream-d);
+  color: var(--anthracite-m);
+  font-size: 15px;
+  font-weight: 600;
+  transition: background .15s;
+}
+.btn-secondary:hover { background: var(--cream-dd); }
+.btn-danger {
+  padding: 13px 18px;
+  border-radius: var(--r-sm);
+  background: var(--red-p);
+  color: var(--red);
+  font-size: 15px;
+  font-weight: 600;
+  transition: background .15s;
+}
+.btn-danger:hover { background: #fcd0d0; }
+
+/* ===== FIREBASE SETUP BANNER ===== */
+.setup-banner {
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-m) 100%);
+  color: white;
+  border-radius: var(--r);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.setup-banner .icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+.setup-banner h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.setup-banner p { font-size: 12px; opacity: .85; line-height: 1.5; }
+.setup-banner .close-x {
+  margin-left: auto;
+  flex-shrink: 0;
+  opacity: .7;
+  font-size: 18px;
+  padding: 2px 6px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+  color: var(--anthracite-l);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ===== CONFIRM DIALOG ===== */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.confirm-overlay.hidden { display: none; }
+.confirm-box {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 24px;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: var(--sh-lg);
+  animation: popIn .2s ease;
+}
+@keyframes popIn {
+  from { transform: scale(.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.confirm-box h3 { font-size: 17px; margin-bottom: 8px; }
+.confirm-box p { font-size: 14px; color: var(--anthracite-m); margin-bottom: 20px; line-height: 1.5; }
+.confirm-btns { display: flex; gap: 10px; }
+
+/* ===== PRICE DISPLAY ===== */
+.total-price-bar {
+  background: var(--green-p);
+  border: 1.5px solid var(--green-p);
+  border-radius: var(--r-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--green);
+  font-weight: 600;
+}
+.total-price-bar .total-val { font-size: 16px; font-weight: 800; }
+
+/* ===== VIEW TOGGLE PILLS ===== */
+.view-toggle {
+  display: flex;
+  background: var(--cream-d);
+  border-radius: 20px;
+  padding: 2px;
+}
+.view-toggle-btn {
+  padding: 6px 12px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--anthracite-l);
+  transition: all .15s;
+}
+.view-toggle-btn.active {
+  background: var(--white);
+  color: var(--green);
+  box-shadow: 0 1px 4px rgba(0,0,0,.1);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .stats-grid { gap: 6px; }
+  .stat-card { padding: 10px 6px; }
+  .stat-card .num { font-size: 22px; }
+  .stat-card .lbl { font-size: 9px; }
+}
+@media (min-width: 768px) {
+  .app { padding: 20px 24px 100px; }
+  .stats-grid { gap: 12px; }
+  .stat-card .num { font-size: 32px; }
+  .filters-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  .filters-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cream-dd); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-title">
+      <h1>🏠 Domeček</h1>
+      <div class="subtitle">Honza & Anička</div>
+    </div>
+    <div class="header-actions">
+      <div class="sync-badge" id="sync-badge">💾 Lokálně</div>
+      <button class="btn-icon" onclick="exportData()" title="Export JSON">⬇️</button>
+      <button class="btn-icon" onclick="document.getElementById('import-file').click()" title="Import JSON">⬆️</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+</header>
+
+<main class="app">
+  <!-- Stats -->
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <!-- Setup banner (shown if no Firebase) -->
+  <div class="setup-banner" id="setup-banner" style="display:none">
+    <div class="icon">🔄</div>
+    <div>
+      <h4>Aktivujte synchronizaci v reálném čase</h4>
+      <p>Pro sdílení mezi Honzou & Aničkou vyplňte Firebase konfiguraci na řádku 3 v JS sekci souboru. Zdarma na firebase.google.com.</p>
+    </div>
+    <button class="close-x" onclick="hideBanner()">✕</button>
+  </div>
+
+  <!-- Controls bar -->
+  <div class="controls-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="search" class="search-input" id="search-input" placeholder="Hledat položku..." oninput="onSearch(this.value)">
+    </div>
+    <div class="view-toggle">
+      <button class="view-toggle-btn active" id="btn-view-rooms" onclick="setView('rooms')">🏠 Místnosti</button>
+      <button class="view-toggle-btn" id="btn-view-flat" onclick="setView('flat')">☰ Seznam</button>
+    </div>
+    <button class="ctrl-btn" id="filter-toggle-btn" onclick="toggleFilters()">
+      <span>Filtry</span>
+      <span class="badge" id="filter-badge" style="display:none">0</span>
+    </button>
+  </div>
+
+  <!-- Filters panel -->
+  <div class="filters-panel" id="filters-panel">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Místnost</label>
+        <select class="filter-select" id="f-room" onchange="applyFilters()">
+          <option value="">Všechny místnosti</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Kategorie</label>
+        <select class="filter-select" id="f-cat" onchange="applyFilters()">
+          <option value="">Všechny kategorie</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Obchod</label>
+        <select class="filter-select" id="f-shop" onchange="applyFilters()">
+          <option value="">Všechny obchody</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Priorita</label>
+        <select class="filter-select" id="f-pri" onchange="applyFilters()">
+          <option value="">Všechny priority</option>
+          <option value="🔴">🔴 Nutné hned</option>
+          <option value="🟡">🟡 Brzy</option>
+          <option value="🟢">🟢 Může počkat</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Stav</label>
+        <select class="filter-select" id="f-status" onchange="applyFilters()">
+          <option value="">Všechny stavy</option>
+          <option value="koupit">🛒 Koupit</option>
+          <option value="objednáno">📦 Objednáno</option>
+          <option value="máme">✅ Máme</option>
+        </select>
+      </div>
+    </div>
+    <div class="filters-footer">
+      <button class="btn-clear" onclick="clearFilters()">Vymazat filtry</button>
+    </div>
+  </div>
+
+  <!-- Sort row -->
+  <div class="sort-row">
+    <button class="sort-btn active" id="sort-priority" onclick="setSort('priority')">🔴 Priorita</button>
+    <button class="sort-btn" id="sort-alpha" onclick="setSort('alpha')">🔤 Abeceda</button>
+    <button class="sort-btn" id="sort-price" onclick="setSort('price')">💰 Cena</button>
+    <button class="sort-btn" id="sort-date" onclick="setSort('date')">📅 Datum</button>
+  </div>
+
+  <!-- Items container -->
+  <div id="items-container"></div>
+</main>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openModal('add', null)">+</button>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="onOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Přidat položku</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Confirm dialog -->
+<div class="confirm-overlay hidden" id="confirm-overlay">
+  <div class="confirm-box">
+    <h3 id="confirm-title">Smazat položku?</h3>
+    <p id="confirm-msg">Tuto akci nelze vrátit zpět.</p>
+    <div class="confirm-btns">
+      <button class="btn-secondary" style="flex:1" onclick="closeConfirm()">Zrušit</button>
+      <button class="btn-danger" style="flex:1" id="confirm-ok">Smazat</button>
+    </div>
+  </div>
+</div>
+
+<footer>Domeček 🏠 — Honza & Anička</footer>
+
+<!-- Firebase SDK (optional - needed only for real-time sync) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// FIREBASE KONFIGURACE — pro real-time sync mezi zařízeními
+// 1. Jděte na https://console.firebase.google.com
+// 2. Vytvořte nový projekt (zdarma)
+// 3. Přidejte webovou aplikaci, zkopírujte config
+// 4. V Realtime Database nastavte pravidla na public read/write
+// 5. Vyplňte níže:
+// ═══════════════════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCwnRx06MWAXPvHOZwGDb2ocy9ORl_AJ_I",
+  authDomain: "domecek-a143f.firebaseapp.com",
+  databaseURL: "https://domecek-a143f-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "domecek-a143f",
+  storageBucket: "domecek-a143f.firebasestorage.app",
+  messagingSenderId: "875618664131",
+  appId: "1:875618664131:web:76b9777dc048d1cd45ec76"
+};
+// ═══════════════════════════════════════════════════════════════════
+
+// ── CONSTANTS ──────────────────────────────────────────────────────
+const ROOMS = [
+  'Kuchyň + obývák','Ložnice přízemí','Koupelna','WC','Vstupní hala',
+  'Ložnice patro 1','Ložnice patro 2','Terasa','Sklep','Celý dům'
+];
+const CATEGORIES = [
+  'Nábytek','Osvětlení','Textil','Spotřebiče','Elektro',
+  'Koupelnové doplňky','Kuchyňské vybavení','Zahrada & exteriér',
+  'Úklid & údržba','Dekorace','Ostatní'
+];
+const SHOPS = [
+  'IKEA','Elektro (Alza/Datart)','Hobby market (OBI/Baumax)',
+  'Online','Nábytkářství','Zahradnictví','Dekorace & design','Supermarket','Různé'
+];
+const PRIORITIES = ['🔴','🟡','🟢'];
+const PRI_LABELS = { '🔴': 'Nutné hned', '🟡': 'Brzy', '🟢': 'Může počkat' };
+const STATUSES = ['koupit','objednáno','máme'];
+const STATUS_ICONS = { 'koupit': '🛒', 'objednáno': '📦', 'máme': '✅' };
+const STATUS_LABELS = { 'koupit': 'Koupit', 'objednáno': 'Objednáno', 'máme': 'Máme' };
+const PRI_ORDER = { '🔴': 0, '🟡': 1, '🟢': 2 };
+const PRI_CLASS = { '🔴': 'pri-red', '🟡': 'pri-yellow', '🟢': 'pri-green' };
+
+// ── DEFAULT ITEMS (~110) ─────────────────────────────────────────────
+const DEFAULT_ITEMS_LIST = [
+  // Kuchyň + obývák (22)
+  {n:'Jídelní stůl',r:'Kuchyň + obývák',c:'Nábytek',s:'IKEA',p:'🔴',note:'Pro 4–6 osob, rozkládací',price:5990,st:'koupit'},
+  {n:'Jídelní židle (4 ks)',r:'Kuchyň + obývák',c:'Nábytek',s:'IKEA',p:'🔴',note:'Sada 4 ks, ladí se stolem',price:3960,st:'koupit'},
+  {n:'Rohová sedačka',r:'Kuchyň + obývák',c:'Nábytek',s:'Nábytkářství',p:'🔴',note:'Rozkládací, světlá látka',price:18990,st:'koupit'},
+  {n:'Konferenční stolek',r:'Kuchyň + obývák',c:'Nábytek',s:'IKEA',p:'🟡',note:'',price:2490,st:'koupit'},
+  {n:'TV stolek / skříňka',r:'Kuchyň + obývák',c:'Nábytek',s:'IKEA',p:'🔴',note:'S úložným prostorem',price:3490,st:'koupit'},
+  {n:'Televize 55"',r:'Kuchyň + obývák',c:'Elektro',s:'Elektro (Alza/Datart)',p:'🔴',note:'Smart TV, 4K',price:12990,st:'koupit'},
+  {n:'Lednice s mrazákem',r:'Kuchyň + obývák',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🔴',note:'Kombinovaná, min. 300 l',price:14990,st:'koupit'},
+  {n:'Sporák s indukční deskou',r:'Kuchyň + obývák',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🔴',note:'Vestavný nebo volně stojící',price:15990,st:'koupit'},
+  {n:'Digestoř',r:'Kuchyň + obývák',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🔴',note:'Šířka min. 60 cm',price:4990,st:'koupit'},
+  {n:'Myčka nádobí',r:'Kuchyň + obývák',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🟡',note:'Vestavná, 60 cm',price:9990,st:'koupit'},
+  {n:'Mikrovlnná trouba',r:'Kuchyň + obývák',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🔴',note:'',price:2990,st:'koupit'},
+  {n:'Rychlovarná konvice',r:'Kuchyň + obývák',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🔴',note:'',price:890,st:'koupit'},
+  {n:'Kávovar',r:'Kuchyň + obývák',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🟡',note:'Plnoautomatický',price:5990,st:'koupit'},
+  {n:'Sada hrnců (5 ks)',r:'Kuchyň + obývák',c:'Kuchyňské vybavení',s:'Online',p:'🔴',note:'Nerez nebo smalt',price:2490,st:'koupit'},
+  {n:'Sada příborů (24 ks)',r:'Kuchyň + obývák',c:'Kuchyňské vybavení',s:'IKEA',p:'🔴',note:'',price:890,st:'koupit'},
+  {n:'Sada nádobí (talíře, misky)',r:'Kuchyň + obývák',c:'Kuchyňské vybavení',s:'IKEA',p:'🔴',note:'Pro 4–6 osob',price:1290,st:'koupit'},
+  {n:'Sada sklenic',r:'Kuchyň + obývák',c:'Kuchyňské vybavení',s:'IKEA',p:'🔴',note:'Sklenice na vodu + víno',price:690,st:'koupit'},
+  {n:'Závěsy kuchyň/obývák',r:'Kuchyň + obývák',c:'Textil',s:'IKEA',p:'🟡',note:'Blackout do ložnicové části',price:1490,st:'koupit'},
+  {n:'Lustr/závěsné světlo obývák',r:'Kuchyň + obývák',c:'Osvětlení',s:'Online',p:'🔴',note:'',price:3490,st:'koupit'},
+  {n:'Koberec obývák',r:'Kuchyň + obývák',c:'Textil',s:'IKEA',p:'🟡',note:'Min. 200x300 cm',price:3990,st:'koupit'},
+  {n:'Kuchyňské nože (sada)',r:'Kuchyň + obývák',c:'Kuchyňské vybavení',s:'Online',p:'🔴',note:'Sada 5 ks + stojan',price:1490,st:'koupit'},
+  {n:'Dřez a baterie',r:'Kuchyň + obývák',c:'Kuchyňské vybavení',s:'Hobby market (OBI/Baumax)',p:'🔴',note:'Nerez dřez 1,5 vaničkový',price:3990,st:'koupit'},
+
+  // Ložnice přízemí (11)
+  {n:'Postel 160×200',r:'Ložnice přízemí',c:'Nábytek',s:'IKEA',p:'🔴',note:'Čalouněná, s úložným prostorem',price:8990,st:'koupit'},
+  {n:'Matrace 160×200',r:'Ložnice přízemí',c:'Nábytek',s:'Online',p:'🔴',note:'Medium tuhosti, paměťová pěna',price:12990,st:'koupit'},
+  {n:'Noční stolky (2 ks)',r:'Ložnice přízemí',c:'Nábytek',s:'IKEA',p:'🔴',note:'S zásuvkou',price:3980,st:'koupit'},
+  {n:'Šatní skříň 3-dveřová',r:'Ložnice přízemí',c:'Nábytek',s:'IKEA',p:'🔴',note:'PAX systém',price:14990,st:'koupit'},
+  {n:'Přehoz na postel',r:'Ložnice přízemí',c:'Textil',s:'Online',p:'🟡',note:'',price:1490,st:'koupit'},
+  {n:'Polštáře (4 ks)',r:'Ložnice přízemí',c:'Textil',s:'IKEA',p:'🔴',note:'',price:1196,st:'koupit'},
+  {n:'Přikrývka zimní (2 ks)',r:'Ložnice přízemí',c:'Textil',s:'IKEA',p:'🔴',note:'',price:1998,st:'koupit'},
+  {n:'Lampičky noční (2 ks)',r:'Ložnice přízemí',c:'Osvětlení',s:'Online',p:'🟡',note:'Dotykové, s USB nabíjením',price:1390,st:'koupit'},
+  {n:'Záclony + závěsy ložnice',r:'Ložnice přízemí',c:'Textil',s:'IKEA',p:'🟡',note:'Blackout závěsy',price:1490,st:'koupit'},
+  {n:'Komoda 6-zásuvková',r:'Ložnice přízemí',c:'Nábytek',s:'IKEA',p:'🟡',note:'',price:5990,st:'koupit'},
+  {n:'Zrcadlo stojací',r:'Ložnice přízemí',c:'Dekorace',s:'IKEA',p:'🟢',note:'',price:1990,st:'koupit'},
+
+  // Koupelna (11)
+  {n:'Zrcadlo s LED osvětlením',r:'Koupelna',c:'Osvětlení',s:'Online',p:'🔴',note:'80×60 cm, s dotykovým vypínačem',price:3490,st:'koupit'},
+  {n:'Police do koupelny',r:'Koupelna',c:'Nábytek',s:'IKEA',p:'🔴',note:'Závěsná, nerez',price:1490,st:'koupit'},
+  {n:'Věšák na ručníky',r:'Koupelna',c:'Koupelnové doplňky',s:'Hobby market (OBI/Baumax)',p:'🔴',note:'Dvojitý, chrom',price:890,st:'koupit'},
+  {n:'Ručníky sada (6 ks)',r:'Koupelna',c:'Textil',s:'IKEA',p:'🔴',note:'2× osuška, 4× ručník',price:1290,st:'koupit'},
+  {n:'Koberec/předložka koupelna',r:'Koupelna',c:'Textil',s:'IKEA',p:'🔴',note:'Protiskluzový',price:490,st:'koupit'},
+  {n:'Sprchový závěs + tyč',r:'Koupelna',c:'Koupelnové doplňky',s:'IKEA',p:'🔴',note:'',price:890,st:'koupit'},
+  {n:'Dávkovač mýdla (2 ks)',r:'Koupelna',c:'Koupelnové doplňky',s:'Online',p:'🔴',note:'Nástěnný, nerez',price:490,st:'koupit'},
+  {n:'Koš na odpadky koupelna',r:'Koupelna',c:'Koupelnové doplňky',s:'IKEA',p:'🔴',note:'',price:290,st:'koupit'},
+  {n:'Úložné boxy (sada)',r:'Koupelna',c:'Koupelnové doplňky',s:'IKEA',p:'🟡',note:'Na kosmetiku a doplňky',price:690,st:'koupit'},
+  {n:'Sušák na prádlo',r:'Koupelna',c:'Úklid & údržba',s:'IKEA',p:'🔴',note:'Skládací',price:890,st:'koupit'},
+  {n:'Skříňka pod umyvadlo',r:'Koupelna',c:'Nábytek',s:'Online',p:'🟡',note:'',price:4990,st:'koupit'},
+
+  // WC (6)
+  {n:'WC kartáč + souprava',r:'WC',c:'Koupelnové doplňky',s:'IKEA',p:'🔴',note:'',price:390,st:'koupit'},
+  {n:'Polička/skříňka WC',r:'WC',c:'Nábytek',s:'IKEA',p:'🟡',note:'',price:1490,st:'koupit'},
+  {n:'Zrcadlo WC',r:'WC',c:'Koupelnové doplňky',s:'Online',p:'🟡',note:'',price:890,st:'koupit'},
+  {n:'Koš na odpadky WC',r:'WC',c:'Koupelnové doplňky',s:'IKEA',p:'🔴',note:'',price:190,st:'koupit'},
+  {n:'Zásobník na toaletní papír',r:'WC',c:'Koupelnové doplňky',s:'Online',p:'🔴',note:'Nástěnný, chrom',price:390,st:'koupit'},
+  {n:'Osvětlení WC',r:'WC',c:'Osvětlení',s:'Hobby market (OBI/Baumax)',p:'🔴',note:'',price:690,st:'koupit'},
+
+  // Vstupní hala (8)
+  {n:'Botník',r:'Vstupní hala',c:'Nábytek',s:'IKEA',p:'🔴',note:'Otevřený + uzavřený, vysoký',price:3490,st:'koupit'},
+  {n:'Věšák na oblečení',r:'Vstupní hala',c:'Nábytek',s:'IKEA',p:'🔴',note:'Nástěnný, s háčky a policí',price:1990,st:'koupit'},
+  {n:'Rohožka venkovní',r:'Vstupní hala',c:'Textil',s:'Hobby market (OBI/Baumax)',p:'🔴',note:'Odolná, čistitelná',price:490,st:'koupit'},
+  {n:'Předložka vnitřní hala',r:'Vstupní hala',c:'Textil',s:'IKEA',p:'🔴',note:'',price:690,st:'koupit'},
+  {n:'Zrcadlo hala',r:'Vstupní hala',c:'Dekorace',s:'IKEA',p:'🔴',note:'Vysoké, min. 50×150 cm',price:1990,st:'koupit'},
+  {n:'Osvětlení haly',r:'Vstupní hala',c:'Osvětlení',s:'Online',p:'🔴',note:'Stropní, teplá bílá',price:1990,st:'koupit'},
+  {n:'Klíčník / organizér',r:'Vstupní hala',c:'Dekorace',s:'Online',p:'🟡',note:'',price:490,st:'koupit'},
+  {n:'Deštníkový stojan',r:'Vstupní hala',c:'Dekorace',s:'Online',p:'🟢',note:'',price:590,st:'koupit'},
+
+  // Ložnice patro 1 (10)
+  {n:'Postel 140×200 (patro 1)',r:'Ložnice patro 1',c:'Nábytek',s:'IKEA',p:'🔴',note:'',price:6990,st:'koupit'},
+  {n:'Matrace 140×200 (patro 1)',r:'Ložnice patro 1',c:'Nábytek',s:'Online',p:'🔴',note:'',price:9990,st:'koupit'},
+  {n:'Noční stolek (patro 1)',r:'Ložnice patro 1',c:'Nábytek',s:'IKEA',p:'🟡',note:'',price:1490,st:'koupit'},
+  {n:'Šatní skříň (patro 1)',r:'Ložnice patro 1',c:'Nábytek',s:'IKEA',p:'🟡',note:'2-dveřová',price:11990,st:'koupit'},
+  {n:'Záclony/závěsy patro 1',r:'Ložnice patro 1',c:'Textil',s:'IKEA',p:'🟡',note:'',price:990,st:'koupit'},
+  {n:'Přikrývka + polštáře (patro 1)',r:'Ložnice patro 1',c:'Textil',s:'IKEA',p:'🔴',note:'',price:1490,st:'koupit'},
+  {n:'Osvětlení patro 1',r:'Ložnice patro 1',c:'Osvětlení',s:'Online',p:'🔴',note:'Stropní i lampičky',price:1990,st:'koupit'},
+  {n:'Psací stůl',r:'Ložnice patro 1',c:'Nábytek',s:'IKEA',p:'🟡',note:'Home office',price:3490,st:'koupit'},
+  {n:'Kancelářská židle',r:'Ložnice patro 1',c:'Nábytek',s:'IKEA',p:'🟡',note:'Ergonomická',price:2990,st:'koupit'},
+  {n:'Koberec patro 1',r:'Ložnice patro 1',c:'Textil',s:'IKEA',p:'🟢',note:'',price:2490,st:'koupit'},
+
+  // Ložnice patro 2 (8)
+  {n:'Postel 120×200 (patro 2)',r:'Ložnice patro 2',c:'Nábytek',s:'IKEA',p:'🟢',note:'Dětský nebo guestroom pokoj',price:4990,st:'koupit'},
+  {n:'Matrace 120×200 (patro 2)',r:'Ložnice patro 2',c:'Nábytek',s:'Online',p:'🟢',note:'',price:7990,st:'koupit'},
+  {n:'Šatní skříň (patro 2)',r:'Ložnice patro 2',c:'Nábytek',s:'IKEA',p:'🟢',note:'',price:8990,st:'koupit'},
+  {n:'Záclony patro 2',r:'Ložnice patro 2',c:'Textil',s:'IKEA',p:'🟢',note:'',price:790,st:'koupit'},
+  {n:'Přikrývka + polštáře (patro 2)',r:'Ložnice patro 2',c:'Textil',s:'IKEA',p:'🟢',note:'',price:1290,st:'koupit'},
+  {n:'Osvětlení patro 2',r:'Ložnice patro 2',c:'Osvětlení',s:'Online',p:'🟡',note:'',price:1490,st:'koupit'},
+  {n:'Komoda (patro 2)',r:'Ložnice patro 2',c:'Nábytek',s:'IKEA',p:'🟢',note:'',price:3990,st:'koupit'},
+  {n:'Dekorace / obrazy patro 2',r:'Ložnice patro 2',c:'Dekorace',s:'Dekorace & design',p:'🟢',note:'',price:990,st:'koupit'},
+
+  // Terasa (9)
+  {n:'Zahradní stůl',r:'Terasa',c:'Nábytek',s:'Hobby market (OBI/Baumax)',p:'🟡',note:'Odolný do venkovního prostředí',price:4990,st:'koupit'},
+  {n:'Zahradní židle (4 ks)',r:'Terasa',c:'Nábytek',s:'Hobby market (OBI/Baumax)',p:'🟡',note:'Skladatelné',price:5960,st:'koupit'},
+  {n:'Zahradní slunečník',r:'Terasa',c:'Zahrada & exteriér',s:'Zahradnictví',p:'🟡',note:'Průměr 300 cm, s nožičkou',price:2990,st:'koupit'},
+  {n:'Venkovní osvětlení (LED pásky)',r:'Terasa',c:'Osvětlení',s:'Online',p:'🟡',note:'Solární nebo 230V',price:1490,st:'koupit'},
+  {n:'Zahradní gril',r:'Terasa',c:'Zahrada & exteriér',s:'Hobby market (OBI/Baumax)',p:'🟢',note:'Plynový nebo na dřevěné uhlí',price:3990,st:'koupit'},
+  {n:'Venkovní koberec terasa',r:'Terasa',c:'Textil',s:'Online',p:'🟢',note:'Odolný vůči UV a dešti',price:1990,st:'koupit'},
+  {n:'Přenosný Bluetooth reproduktor',r:'Terasa',c:'Elektro',s:'Elektro (Alza/Datart)',p:'🟢',note:'Voděodolný',price:2490,st:'koupit'},
+  {n:'Venkovní květináče (sada)',r:'Terasa',c:'Zahrada & exteriér',s:'Zahradnictví',p:'🟢',note:'Keramické nebo kamenné',price:1490,st:'koupit'},
+  {n:'Zahradní dřevník na dříví',r:'Terasa',c:'Zahrada & exteriér',s:'Hobby market (OBI/Baumax)',p:'🟢',note:'',price:1990,st:'koupit'},
+
+  // Sklep (8)
+  {n:'Regálový systém sklep',r:'Sklep',c:'Nábytek',s:'Hobby market (OBI/Baumax)',p:'🟡',note:'Kovové regály, nosnost 200 kg/pol.',price:2990,st:'koupit'},
+  {n:'Pracovní stůl sklep/dílna',r:'Sklep',c:'Nábytek',s:'IKEA',p:'🟢',note:'',price:3490,st:'koupit'},
+  {n:'Osvětlení sklep',r:'Sklep',c:'Osvětlení',s:'Hobby market (OBI/Baumax)',p:'🟡',note:'LED pásy nebo zářivky',price:890,st:'koupit'},
+  {n:'Sada základního nářadí',r:'Sklep',c:'Úklid & údržba',s:'Hobby market (OBI/Baumax)',p:'🔴',note:'Kladivo, šroubováky, klíče, vrtačka',price:4990,st:'koupit'},
+  {n:'Úložné boxy velké',r:'Sklep',c:'Ostatní',s:'Online',p:'🟡',note:'Na sezónní věci',price:1490,st:'koupit'},
+  {n:'Montážní žebřík 3m',r:'Sklep',c:'Úklid & údržba',s:'Hobby market (OBI/Baumax)',p:'🟡',note:'Hliníkový, skládací',price:2490,st:'koupit'},
+  {n:'Prodlužovačky (2 ks)',r:'Sklep',c:'Elektro',s:'Hobby market (OBI/Baumax)',p:'🟡',note:'5 m, s přepěťovou ochranou',price:890,st:'koupit'},
+  {n:'Mrazák (chest freezer)',r:'Sklep',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🟢',note:'200+ litrů',price:8990,st:'koupit'},
+
+  // Celý dům (13)
+  {n:'Pračka',r:'Celý dům',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🔴',note:'Přední plnění, 1400 otáček, 8 kg',price:14990,st:'koupit'},
+  {n:'Sušička prádla',r:'Celý dům',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🟡',note:'Tepelné čerpadlo, energetická třída A',price:12990,st:'koupit'},
+  {n:'Robotický vysavač',r:'Celý dům',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🟡',note:'S mopovací funkcí',price:8990,st:'koupit'},
+  {n:'Tyčový vysavač',r:'Celý dům',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🔴',note:'Bezdrátový, 45+ min výdrž',price:3990,st:'koupit'},
+  {n:'Žehlička',r:'Celý dům',c:'Spotřebiče',s:'Elektro (Alza/Datart)',p:'🔴',note:'Parní, min. 2400 W',price:1290,st:'koupit'},
+  {n:'Žehlicí prkno',r:'Celý dům',c:'Úklid & údržba',s:'Online',p:'🔴',note:'Výškově nastavitelné',price:890,st:'koupit'},
+  {n:'WiFi router / mesh systém',r:'Celý dům',c:'Elektro',s:'Elektro (Alza/Datart)',p:'🔴',note:'WiFi 6, pokrytí celého domu',price:4990,st:'koupit'},
+  {n:'Bezpečnostní kamera (2 ks)',r:'Celý dům',c:'Elektro',s:'Online',p:'🟡',note:'Venkovní, IP67, noční vidění',price:3490,st:'koupit'},
+  {n:'Detektor kouře (3 ks)',r:'Celý dům',c:'Elektro',s:'Online',p:'🔴',note:'Do každého patra',price:1190,st:'koupit'},
+  {n:'Hasicí přístroj',r:'Celý dům',c:'Úklid & údržba',s:'Hobby market (OBI/Baumax)',p:'🔴',note:'2 kg práškový + kuchyňský',price:1290,st:'koupit'},
+  {n:'Lékárnička domácí',r:'Celý dům',c:'Ostatní',s:'Supermarket',p:'🔴',note:'Vybavená základním materiálem',price:590,st:'koupit'},
+  {n:'Domovní zvonek s kamerou',r:'Celý dům',c:'Elektro',s:'Online',p:'🟡',note:'Smart, wifi, s aplikací',price:2490,st:'koupit'},
+  {n:'Pokojové rostliny (sada)',r:'Celý dům',c:'Dekorace',s:'Zahradnictví',p:'🟢',note:'Monstera, pothos, sansevieria...',price:1490,st:'koupit'},
+];
+
+// ── APP STATE ────────────────────────────────────────────────────────
+let items = {};
+let db = null;
+let appState = {
+  view: 'rooms',
+  sort: 'priority',
+  filters: { room:'', cat:'', shop:'', pri:'', status:'', search:'' },
+  filtersOpen: false,
+  expandedNotes: new Set(),
+  lastSync: null,
+  useFirebase: false
+};
+
+// ── UTILS ────────────────────────────────────────────────────────────
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+function fmt(n) {
+  return n ? n.toLocaleString('cs-CZ') + ' Kč' : '—';
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = (now - d) / 1000;
+  if (diff < 60) return 'právě teď';
+  if (diff < 3600) return Math.floor(diff/60) + ' min';
+  if (diff < 86400) return Math.floor(diff/3600) + ' hod';
+  return d.toLocaleDateString('cs-CZ', {day:'numeric',month:'short'});
+}
+
+// ── FIREBASE INIT ────────────────────────────────────────────────────
+function initFirebase() {
+  if (!FIREBASE_CONFIG) {
+    const hidden = localStorage.getItem('setup_banner_hidden');
+    if (!hidden) document.getElementById('setup-banner').style.display = 'flex';
+    return false;
+  }
+  try {
+    const app = firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    appState.useFirebase = true;
+
+    setSyncBadge('⏳ Připojování...', '');
+
+    db.ref('items').on('value', (snap) => {
+      const data = snap.val();
+      if (data && Object.keys(data).length > 0) {
+        items = data;
+      } else {
+        // First run: seed default items
+        seedDefaults();
+      }
+      appState.lastSync = new Date();
+      setSyncBadge('🟢 Synced ' + fmtDate(appState.lastSync.toISOString()), 'ok');
+      render();
+    }, (err) => {
+      setSyncBadge('🔴 Chyba sync', 'err');
+      console.error('Firebase error:', err);
+    });
+
+    return true;
+  } catch(e) {
+    console.error('Firebase init failed:', e);
+    setSyncBadge('🔴 Firebase chyba', 'err');
+    return false;
+  }
+}
+
+// ── LOCALSTORAGE ─────────────────────────────────────────────────────
+function saveLS() {
+  localStorage.setItem('domecek_v2', JSON.stringify(items));
+  appState.lastSync = new Date();
+  setSyncBadge('💾 Uloženo ' + fmtDate(appState.lastSync.toISOString()), '');
+}
+
+function loadLS() {
+  const raw = localStorage.getItem('domecek_v2');
+  if (raw) {
+    try { items = JSON.parse(raw); } catch(e) { items = {}; }
+  }
+  if (!raw || Object.keys(items).length === 0) seedDefaults();
+}
+
+// ── SEEDING ──────────────────────────────────────────────────────────
+function seedDefaults() {
+  items = {};
+  DEFAULT_ITEMS_LIST.forEach(d => {
+    const id = genId();
+    items[id] = {
+      id, naziv: d.n, room: d.r, cat: d.c, shop: d.s,
+      pri: d.p, note: d.note || '', price: d.price,
+      status: d.st, edited: new Date(Date.now() - Math.random()*7*86400000).toISOString()
+    };
+  });
+  if (appState.useFirebase && db) {
+    db.ref('items').set(items);
+  } else {
+    saveLS();
+  }
+}
+
+// ── CRUD ─────────────────────────────────────────────────────────────
+function saveItem(item) {
+  if (!item.id) item.id = genId();
+  item.edited = new Date().toISOString();
+  items[item.id] = item;
+  if (appState.useFirebase && db) {
+    db.ref('items/' + item.id).set(item);
+  } else {
+    saveLS();
+    render();
+  }
+}
+
+function deleteItem(id) {
+  delete items[id];
+  if (appState.useFirebase && db) {
+    db.ref('items/' + id).remove();
+  } else {
+    saveLS();
+    render();
+  }
+}
+
+function cycleStatus(id, e) {
+  e && e.stopPropagation();
+  const item = items[id];
+  if (!item) return;
+  const cycle = ['koupit','objednáno','máme'];
+  const idx = cycle.indexOf(item.status);
+  item.status = cycle[(idx + 1) % cycle.length];
+  saveItem(item);
+}
+
+// ── SYNC BADGE ────────────────────────────────────────────────────────
+function setSyncBadge(text, cls) {
+  const el = document.getElementById('sync-badge');
+  el.textContent = text;
+  el.className = 'sync-badge' + (cls ? ' ' + cls : '');
+}
+
+// ── FILTERS ───────────────────────────────────────────────────────────
+function applyFilters() {
+  appState.filters.room   = document.getElementById('f-room').value;
+  appState.filters.cat    = document.getElementById('f-cat').value;
+  appState.filters.shop   = document.getElementById('f-shop').value;
+  appState.filters.pri    = document.getElementById('f-pri').value;
+  appState.filters.status = document.getElementById('f-status').value;
+  updateFilterBadge();
+  renderItems();
+}
+
+function updateFilterBadge() {
+  const f = appState.filters;
+  const count = [f.room,f.cat,f.shop,f.pri,f.status].filter(v=>v).length;
+  const badge = document.getElementById('filter-badge');
+  const btn = document.getElementById('filter-toggle-btn');
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'inline-block' : 'none';
+  btn.classList.toggle('active', appState.filtersOpen || count > 0);
+}
+
+function clearFilters() {
+  ['f-room','f-cat','f-shop','f-pri','f-status'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  appState.filters = { ...appState.filters, room:'', cat:'', shop:'', pri:'', status:'' };
+  updateFilterBadge();
+  renderItems();
+}
+
+function toggleFilters() {
+  appState.filtersOpen = !appState.filtersOpen;
+  document.getElementById('filters-panel').classList.toggle('open', appState.filtersOpen);
+  document.getElementById('filter-toggle-btn').classList.toggle('active', appState.filtersOpen);
+}
+
+function onSearch(val) {
+  appState.filters.search = val.toLowerCase();
+  renderItems();
+}
+
+// ── SORT ───────────────────────────────────────────────────────────────
+function setSort(s) {
+  appState.sort = s;
+  ['priority','alpha','price','date'].forEach(k => {
+    document.getElementById('sort-' + k).classList.toggle('active', k === s);
+  });
+  renderItems();
+}
+
+// ── VIEW ───────────────────────────────────────────────────────────────
+function setView(v) {
+  appState.view = v;
+  document.getElementById('btn-view-rooms').classList.toggle('active', v === 'rooms');
+  document.getElementById('btn-view-flat').classList.toggle('active', v === 'flat');
+  renderItems();
+}
+
+// ── FILTERING + SORTING ─────────────────────────────────────────────────
+function getFiltered() {
+  const f = appState.filters;
+  return Object.values(items).filter(item => {
+    if (f.room   && item.room   !== f.room)   return false;
+    if (f.cat    && item.cat    !== f.cat)     return false;
+    if (f.shop   && item.shop   !== f.shop)    return false;
+    if (f.pri    && item.pri    !== f.pri)     return false;
+    if (f.status && item.status !== f.status)  return false;
+    if (f.search) {
+      const q = f.search;
+      const hay = [item.naziv,item.room,item.cat,item.shop,item.note].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function sortItems(arr) {
+  const s = appState.sort;
+  return [...arr].sort((a, b) => {
+    // Completed always last
+    const aDone = a.status === 'máme' ? 1 : 0;
+    const bDone = b.status === 'máme' ? 1 : 0;
+    if (aDone !== bDone) return aDone - bDone;
+
+    if (s === 'priority') {
+      const pd = PRI_ORDER[a.pri] - PRI_ORDER[b.pri];
+      if (pd !== 0) return pd;
+      return a.naziv.localeCompare(b.naziv, 'cs');
+    }
+    if (s === 'alpha')  return a.naziv.localeCompare(b.naziv, 'cs');
+    if (s === 'price')  return (b.price || 0) - (a.price || 0);
+    if (s === 'date')   return new Date(b.edited) - new Date(a.edited);
+    return 0;
+  });
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function render() {
+  renderStats();
+  renderItems();
+}
+
+function renderStats() {
+  const all = Object.values(items);
+  const total = all.length;
+  const koupit = all.filter(i => i.status === 'koupit').length;
+  const obj    = all.filter(i => i.status === 'objednáno').length;
+  const mame   = all.filter(i => i.status === 'máme').length;
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card celkem">
+      <div class="num">${total}</div>
+      <div class="lbl">Celkem</div>
+    </div>
+    <div class="stat-card koupit">
+      <div class="num">${koupit}</div>
+      <div class="lbl">🛒 Koupit</div>
+    </div>
+    <div class="stat-card objednano">
+      <div class="num">${obj}</div>
+      <div class="lbl">📦 Objednáno</div>
+    </div>
+    <div class="stat-card mame">
+      <div class="num">${mame}</div>
+      <div class="lbl">✅ Máme</div>
+    </div>
+  `;
+}
+
+function renderItems() {
+  const container = document.getElementById('items-container');
+  const filtered = sortItems(getFiltered());
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="emoji">🔍</span>
+        <h3>Nic nenalezeno</h3>
+        <p>Zkuste upravit filtry nebo vyhledávání.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (appState.view === 'rooms') {
+    renderByRooms(container, filtered);
+  } else {
+    renderFlat(container, filtered);
+  }
+}
+
+function renderByRooms(container, filtered) {
+  const byRoom = {};
+  ROOMS.forEach(r => { byRoom[r] = []; });
+  filtered.forEach(item => {
+    if (byRoom[item.room]) byRoom[item.room].push(item);
+    else {
+      byRoom[item.room] = byRoom[item.room] || [];
+      byRoom[item.room].push(item);
+    }
+  });
+
+  let html = '';
+  ROOMS.forEach(room => {
+    const roomItems = byRoom[room] || [];
+    if (roomItems.length === 0) return;
+
+    const totalPrice = roomItems.reduce((s, i) => s + (i.status !== 'máme' ? (i.price || 0) : 0), 0);
+    const roomEmojis = {
+      'Kuchyň + obývák': '🍳',
+      'Ložnice přízemí': '🛏',
+      'Koupelna': '🚿',
+      'WC': '🚽',
+      'Vstupní hala': '🚪',
+      'Ložnice patro 1': '🛏',
+      'Ložnice patro 2': '🛏',
+      'Terasa': '🌿',
+      'Sklep': '📦',
+      'Celý dům': '🏠',
+    };
+    const emoji = roomEmojis[room] || '🏠';
+
+    html += `<div class="room-section">
+      <div class="room-header">
+        <div class="room-name">${emoji} ${room} <span class="room-count">${roomItems.length}</span></div>
+        ${totalPrice > 0 ? `<div class="room-price">~${fmt(totalPrice)}</div>` : ''}
+      </div>
+      ${roomItems.map(i => itemCardHTML(i)).join('')}
+    </div>`;
+  });
+
+  container.innerHTML = html;
+  attachCardEvents();
+}
+
+function renderFlat(container, filtered) {
+  const totalPrice = filtered.filter(i => i.status !== 'máme').reduce((s, i) => s + (i.price || 0), 0);
+  let html = '';
+  if (totalPrice > 0) {
+    html += `<div class="total-price-bar">
+      <span>Celková odhadovaná cena (zbývá koupit)</span>
+      <span class="total-val">${fmt(totalPrice)}</span>
+    </div>`;
+  }
+  html += filtered.map(i => itemCardHTML(i)).join('');
+  container.innerHTML = html;
+  attachCardEvents();
+}
+
+function itemCardHTML(item) {
+  const isDone = item.status === 'máme';
+  const priClass = isDone ? '' : PRI_CLASS[item.pri] || '';
+  const statusIcon = STATUS_ICONS[item.status] || '🛒';
+  const statusClass = item.status === 'objednáno' ? 'objednano' : (item.status || 'koupit').replace('á','a').replace('é','e');
+  const noteOpen = appState.expandedNotes.has(item.id);
+  const hasNote = item.note && item.note.trim();
+
+  return `
+    <div class="item-card ${priClass} ${isDone ? 'done' : ''}" data-id="${item.id}">
+      <div class="item-main">
+        <button class="item-status-btn ${statusClass}" onclick="cycleStatus('${item.id}', event)" title="${STATUS_LABELS[item.status] || ''}">${statusIcon}</button>
+        <div class="item-body">
+          <div class="item-name">${escHtml(item.naziv)}</div>
+          <div class="item-meta">
+            ${appState.view === 'flat' ? `<span class="tag tag-room">${escHtml(item.room)}</span>` : ''}
+            <span class="tag tag-cat">${escHtml(item.cat)}</span>
+            <span class="tag tag-shop">${escHtml(item.shop)}</span>
+          </div>
+        </div>
+        <div class="item-right">
+          <div class="item-price">${fmt(item.price)}</div>
+          <div class="item-actions">
+            ${hasNote ? `<button class="action-btn note-btn ${noteOpen ? 'open' : ''} has-note" onclick="toggleNote('${item.id}', event)" title="Poznámka">📝</button>` : `<button class="action-btn note-btn" onclick="toggleNote('${item.id}', event)" title="Poznámka">📋</button>`}
+            <button class="action-btn edit" onclick="openModal('edit', '${item.id}', event)" title="Upravit">✏️</button>
+            <button class="action-btn del" onclick="confirmDelete('${item.id}', event)" title="Smazat">🗑</button>
+          </div>
+        </div>
+      </div>
+      ${hasNote || noteOpen ? `<div class="item-note ${noteOpen ? 'open' : ''}" id="note-${item.id}">${escHtml(item.note || '')}</div>` : ''}
+    </div>
+  `;
+}
+
+function attachCardEvents() {
+  // No delegation needed; we use inline onclick
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── NOTE TOGGLE ────────────────────────────────────────────────────────
+function toggleNote(id, e) {
+  e && e.stopPropagation();
+  if (appState.expandedNotes.has(id)) {
+    appState.expandedNotes.delete(id);
+  } else {
+    appState.expandedNotes.add(id);
+  }
+  renderItems();
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────
+let currentEditId = null;
+
+function openModal(mode, id, e) {
+  e && e.stopPropagation();
+  currentEditId = mode === 'edit' ? id : null;
+
+  const item = mode === 'edit' ? items[id] : {
+    naziv: '', room: ROOMS[0], cat: CATEGORIES[0], shop: SHOPS[0],
+    pri: '🔴', note: '', price: '', status: 'koupit'
+  };
+
+  document.getElementById('modal-title').textContent = mode === 'edit' ? 'Upravit položku' : 'Přidat položku';
+
+  const roomOpts = ROOMS.map(r => `<option value="${r}" ${item.room===r?'selected':''}>${r}</option>`).join('');
+  const catOpts  = CATEGORIES.map(c => `<option value="${c}" ${item.cat===c?'selected':''}>${c}</option>`).join('');
+  const shopOpts = SHOPS.map(s => `<option value="${s}" ${item.shop===s?'selected':''}>${s}</option>`).join('');
+  const statusOpts = STATUSES.map(s => `<option value="${s}" ${item.status===s?'selected':''}>${STATUS_ICONS[s]} ${STATUS_LABELS[s]}</option>`).join('');
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-grid">
+      <div class="form-group form-col-2">
+        <label>Název položky *</label>
+        <input class="form-input" id="m-name" placeholder="Např. Jídelní stůl" value="${escHtml(item.naziv)}" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Místnost</label>
+        <select class="form-select" id="m-room">${roomOpts}</select>
+      </div>
+      <div class="form-group">
+        <label>Kategorie</label>
+        <select class="form-select" id="m-cat">${catOpts}</select>
+      </div>
+      <div class="form-group">
+        <label>Typ obchodu</label>
+        <select class="form-select" id="m-shop">${shopOpts}</select>
+      </div>
+      <div class="form-group">
+        <label>Stav</label>
+        <select class="form-select" id="m-status">${statusOpts}</select>
+      </div>
+      <div class="form-group form-col-2">
+        <label>Priorita</label>
+        <div class="priority-btns" id="pri-btns">
+          <button type="button" class="pri-btn ${item.pri==='🔴'?'active':''}" data-v="🔴" onclick="selectPri('🔴')">🔴 Nutné hned</button>
+          <button type="button" class="pri-btn ${item.pri==='🟡'?'active':''}" data-v="🟡" onclick="selectPri('🟡')">🟡 Brzy</button>
+          <button type="button" class="pri-btn ${item.pri==='🟢'?'active':''}" data-v="🟢" onclick="selectPri('🟢')">🟢 Může počkat</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Odhadovaná cena (Kč)</label>
+        <input class="form-input" id="m-price" type="number" placeholder="0" value="${item.price || ''}" min="0">
+      </div>
+      <div class="form-group">
+        <label>&nbsp;</label>
+        <div style="font-size:12px;color:var(--anthracite-l);padding-top:12px">Změněno: ${item.edited ? fmtDate(item.edited) : '—'}</div>
+      </div>
+      <div class="form-group form-col-2">
+        <label>Poznámka</label>
+        <textarea class="form-textarea" id="m-note" placeholder="Volitelná poznámka...">${escHtml(item.note || '')}</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      ${mode === 'edit' ? `<button class="btn-danger" onclick="confirmDelete('${id}', null, true)">Smazat</button>` : ''}
+      <button class="btn-secondary" onclick="closeModal()">Zrušit</button>
+      <button class="btn-primary" onclick="saveModal()">Uložit</button>
+    </div>
+  `;
+
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  setTimeout(() => document.getElementById('m-name').focus(), 100);
+}
+
+function selectPri(val) {
+  document.querySelectorAll('.pri-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.v === val);
+  });
+}
+
+function getSelectedPri() {
+  const active = document.querySelector('.pri-btn.active');
+  return active ? active.dataset.v : '🔴';
+}
+
+function saveModal() {
+  const name = document.getElementById('m-name').value.trim();
+  if (!name) {
+    document.getElementById('m-name').focus();
+    document.getElementById('m-name').style.borderColor = 'var(--red)';
+    return;
+  }
+
+  const item = {
+    id: currentEditId || genId(),
+    naziv: name,
+    room: document.getElementById('m-room').value,
+    cat: document.getElementById('m-cat').value,
+    shop: document.getElementById('m-shop').value,
+    status: document.getElementById('m-status').value,
+    pri: getSelectedPri(),
+    price: parseInt(document.getElementById('m-price').value) || 0,
+    note: document.getElementById('m-note').value.trim(),
+  };
+
+  saveItem(item);
+  closeModal();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  currentEditId = null;
+}
+
+function onOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// ── CONFIRM DELETE ────────────────────────────────────────────────────
+function confirmDelete(id, e, fromModal) {
+  e && e.stopPropagation();
+  const item = items[id];
+  if (!item) return;
+
+  document.getElementById('confirm-title').textContent = 'Smazat položku?';
+  document.getElementById('confirm-msg').textContent = `„${item.naziv}" bude trvale odstraněna.`;
+  document.getElementById('confirm-ok').onclick = () => {
+    deleteItem(id);
+    closeConfirm();
+    if (fromModal) closeModal();
+  };
+  document.getElementById('confirm-overlay').classList.remove('hidden');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.add('hidden');
+}
+
+// ── EXPORT / IMPORT ──────────────────────────────────────────────────
+function exportData() {
+  const blob = new Blob([JSON.stringify(items, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'domecek-export-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (typeof imported !== 'object') throw new Error('Invalid format');
+      items = imported;
+      if (appState.useFirebase && db) {
+        db.ref('items').set(items);
+      } else {
+        saveLS();
+      }
+      render();
+      alert('Import úspěšný! Načteno ' + Object.keys(imported).length + ' položek.');
+    } catch(err) {
+      alert('Chyba při importu: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ── FILTER SELECT POPULATION ─────────────────────────────────────────
+function populateFilterSelects() {
+  const roomSel = document.getElementById('f-room');
+  const catSel  = document.getElementById('f-cat');
+  const shopSel = document.getElementById('f-shop');
+
+  ROOMS.forEach(r => {
+    const o = document.createElement('option');
+    o.value = r; o.textContent = r;
+    roomSel.appendChild(o);
+  });
+  CATEGORIES.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    catSel.appendChild(o);
+  });
+  SHOPS.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    shopSel.appendChild(o);
+  });
+}
+
+function hideBanner() {
+  document.getElementById('setup-banner').style.display = 'none';
+  localStorage.setItem('setup_banner_hidden', '1');
+}
+
+// ── KEYBOARD ─────────────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+    closeConfirm();
+  }
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────
+function init() {
+  populateFilterSelects();
+
+  const usesFB = initFirebase();
+  if (!usesFB) {
+    loadLS();
+    render();
+  }
+  // If Firebase: render is called by the onValue listener
+}
+
+init();
+</script>
+</body>
+</html>
